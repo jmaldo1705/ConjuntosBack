@@ -1,3 +1,6 @@
 package com.conjuntos.conjuntosback.auth.dto;
 
-public record LoginResponse(String token) {}
+public record LoginResponse(
+        String token,
+        UserInfo user
+) {}

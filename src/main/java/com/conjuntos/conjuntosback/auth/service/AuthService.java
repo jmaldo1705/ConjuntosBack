@@ -1,5 +1,7 @@
 package com.conjuntos.conjuntosback.auth.service;
 
+import com.conjuntos.conjuntosback.auth.dto.LoginResponse;
+import com.conjuntos.conjuntosback.auth.dto.UserInfo;
 import com.conjuntos.conjuntosback.auth.model.User;
 import com.conjuntos.conjuntosback.auth.repository.UserRepository;
 import com.conjuntos.conjuntosback.auth.security.JwtUtils;
@@ -33,18 +35,36 @@ public class AuthService {
     }
 
     /**
-     * Authenticates a user and generates a JWT token.
+     * Authenticates a user and generates a JWT token along with user information.
      *
      * @param username the username
      * @param password the password
-     * @return the JWT token
+     * @return an object containing the JWT token and user information
      */
-    public String authenticateUser(String username, String password) {
+    public LoginResponse authenticateUser(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return jwtUtils.generateToken(username);
+        String token = jwtUtils.generateToken(username);
+
+        // Obtener el usuario autenticado
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Crear el DTO con la información del usuario (sin contraseña)
+        UserInfo userInfo = new UserInfo(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFullName(),
+                user.getApartmentNumber(),
+                user.getPhoneNumber(),
+                user.getRoles(),
+                user.isActive()
+        );
+
+        return new LoginResponse(token, userInfo);
     }
 
     /**

@@ -25,12 +25,12 @@ public class AuthController {
      * Endpoint for user login.
      *
      * @param request the login request containing username and password
-     * @return a response containing the JWT token
+     * @return a response containing the JWT token and user information
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        String token = authService.authenticateUser(request.username(), request.password());
-        return ResponseEntity.ok(new LoginResponse(token));
+        LoginResponse response = authService.authenticateUser(request.username(), request.password());
+        return ResponseEntity.ok(response);
     }
 
     /**

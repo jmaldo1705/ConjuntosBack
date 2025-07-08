@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-vecinos
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: PasswordDB
+      MYSQL_DATABASE: vecinos_conectados
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
