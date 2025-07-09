@@ -53,7 +53,7 @@ public class ApartamentoService {
 
         Pageable pageable = PageRequest.of(pagina, limite);
 
-        // Usar el nuevo método que filtra por nombre del conjunto
+        // Usar el nuevo method que filtra por nombre del conjunto
         Page<Apartamento> apartamentosPage = apartamentoRepository.findByFiltros(
                 tipoEnum != null ? tipoEnum.name() : null,
                 conjunto,
