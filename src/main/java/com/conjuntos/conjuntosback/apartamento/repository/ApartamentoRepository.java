@@ -16,34 +16,34 @@ public interface ApartamentoRepository extends JpaRepository<Apartamento, Long> 
 
     @Query("SELECT a FROM Apartamento a WHERE " +
             "(:tipo IS NULL OR a.tipo = :tipo) AND " +
-            "(:conjunto IS NULL OR LOWER(a.conjunto) LIKE LOWER(CONCAT('%', :conjunto, '%'))) AND " +
+            "(:conjuntoNombre IS NULL OR a.conjunto.nombre = :conjuntoNombre) AND " +
             "(:habitaciones IS NULL OR a.habitaciones = :habitaciones) AND " +
             "(:precioMin IS NULL OR a.precio >= :precioMin) AND " +
             "(:precioMax IS NULL OR a.precio <= :precioMax) AND " +
             "(:disponible IS NULL OR a.disponible = :disponible) AND " +
             "(:destacado IS NULL OR a.destacado = :destacado) AND " +
             "(:busqueda IS NULL OR LOWER(a.titulo) LIKE LOWER(CONCAT('%', :busqueda, '%')) OR " +
-            "LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :busqueda, '%'))) " +
-            "ORDER BY a.destacado DESC, a.fechaCreacion DESC")
-    Page<Apartamento> findApartamentosConFiltros(
-            @Param("tipo") Apartamento.TipoApartamento tipo,
-            @Param("conjunto") String conjunto,
-            @Param("habitaciones") Integer habitaciones,
-            @Param("precioMin") BigDecimal precioMin,
-            @Param("precioMax") BigDecimal precioMax,
-            @Param("disponible") Boolean disponible,
-            @Param("destacado") Boolean destacado,
-            @Param("busqueda") String busqueda,
-            Pageable pageable
-    );
+            "LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :busqueda, '%')) OR " +
+            "LOWER(a.conjunto.nombre) LIKE LOWER(CONCAT('%', :busqueda, '%')))")
+    Page<Apartamento> findByFiltros(@Param("tipo") String tipo,
+                                    @Param("conjuntoNombre") String conjuntoNombre,
+                                    @Param("habitaciones") Integer habitaciones,
+                                    @Param("precioMin") BigDecimal precioMin,
+                                    @Param("precioMax") BigDecimal precioMax,
+                                    @Param("disponible") Boolean disponible,
+                                    @Param("destacado") Boolean destacado,
+                                    @Param("busqueda") String busqueda,
+                                    Pageable pageable);
 
-    @Query("SELECT DISTINCT a.conjunto FROM Apartamento a ORDER BY a.conjunto")
-    List<String> findAllConjuntos();
+    @Query("SELECT DISTINCT c.nombre FROM Apartamento a JOIN a.conjunto c ORDER BY c.nombre")
+    List<String> findDistinctConjuntos();
 
-    @Query("SELECT COUNT(a) FROM Apartamento a WHERE a.tipo = :tipo")
-    Long countByTipo(@Param("tipo") Apartamento.TipoApartamento tipo);
+    Long countByTipo(Apartamento.TipoApartamento tipo);
 
-    Long countByDisponible(Boolean disponible);
+    Long countByDisponibleTrue();
 
-    Long countByDestacado(Boolean destacado);
+    Long countByDestacadoTrue();
+
+    @Query("SELECT AVG(a.precio) FROM Apartamento a WHERE a.disponible = true")
+    BigDecimal findAveragePrecio();
 }

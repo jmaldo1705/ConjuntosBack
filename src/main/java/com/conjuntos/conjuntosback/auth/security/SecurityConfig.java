@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/test/public").permitAll() // Public test endpoint
                         .requestMatchers(HttpMethod.GET, "/api/apartamentos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/conjuntos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

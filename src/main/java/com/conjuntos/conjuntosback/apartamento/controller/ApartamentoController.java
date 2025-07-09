@@ -52,6 +52,13 @@ public class ApartamentoController {
         return ResponseEntity.ok(conjuntos);
     }
 
+    // Nuevo endpoint para obtener información completa de conjuntos
+    @GetMapping("/conjuntos/completo")
+    public ResponseEntity<List<ConjuntoDTO>> obtenerConjuntosCompleto() {
+        List<ConjuntoDTO> conjuntos = apartamentoService.obtenerConjuntosCompleto();
+        return ResponseEntity.ok(conjuntos);
+    }
+
     @GetMapping("/estadisticas")
     public ResponseEntity<EstadisticasApartamentos> obtenerEstadisticas() {
         EstadisticasApartamentos estadisticas = apartamentoService.obtenerEstadisticas();

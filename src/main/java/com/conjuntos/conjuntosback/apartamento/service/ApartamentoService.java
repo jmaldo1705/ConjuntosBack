@@ -1,10 +1,13 @@
+
 package com.conjuntos.conjuntosback.apartamento.service;
 
 import com.conjuntos.conjuntosback.apartamento.dto.*;
 import com.conjuntos.conjuntosback.apartamento.entity.Apartamento;
+import com.conjuntos.conjuntosback.apartamento.entity.Conjunto;
 import com.conjuntos.conjuntosback.apartamento.entity.SolicitudInformacion;
 import com.conjuntos.conjuntosback.apartamento.entity.SolicitudVisita;
 import com.conjuntos.conjuntosback.apartamento.repository.ApartamentoRepository;
+import com.conjuntos.conjuntosback.apartamento.repository.ConjuntoRepository;
 import com.conjuntos.conjuntosback.apartamento.repository.SolicitudInformacionRepository;
 import com.conjuntos.conjuntosback.apartamento.repository.SolicitudVisitaRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,6 +31,7 @@ import java.util.Optional;
 public class ApartamentoService {
 
     private final ApartamentoRepository apartamentoRepository;
+    private final ConjuntoRepository conjuntoRepository;
     private final SolicitudInformacionRepository solicitudInformacionRepository;
     private final SolicitudVisitaRepository solicitudVisitaRepository;
     private final ObjectMapper objectMapper;
@@ -37,6 +41,7 @@ public class ApartamentoService {
                                                     Boolean disponible, Boolean destacado, String busqueda,
                                                     int pagina, int limite) {
 
+        // Convertir string a enum si es necesario
         Apartamento.TipoApartamento tipoEnum = null;
         if (tipo != null) {
             try {
@@ -47,8 +52,18 @@ public class ApartamentoService {
         }
 
         Pageable pageable = PageRequest.of(pagina, limite);
-        Page<Apartamento> apartamentosPage = apartamentoRepository.findApartamentosConFiltros(
-                tipoEnum, conjunto, habitaciones, precioMin, precioMax, disponible, destacado, busqueda, pageable
+
+        // Usar el nuevo método que filtra por nombre del conjunto
+        Page<Apartamento> apartamentosPage = apartamentoRepository.findByFiltros(
+                tipoEnum != null ? tipoEnum.name() : null,
+                conjunto,
+                habitaciones,
+                precioMin,
+                precioMax,
+                disponible,
+                destacado,
+                busqueda,
+                pageable
         );
 
         List<ApartamentoDTO> apartamentosDTO = apartamentosPage.getContent().stream()
@@ -72,15 +87,22 @@ public class ApartamentoService {
     }
 
     public List<String> obtenerConjuntos() {
-        return apartamentoRepository.findAllConjuntos();
+        return apartamentoRepository.findDistinctConjuntos();
+    }
+
+    public List<ConjuntoDTO> obtenerConjuntosCompleto() {
+        List<Conjunto> conjuntos = conjuntoRepository.findAll();
+        return conjuntos.stream()
+                .map(this::convertirConjuntoADTO)
+                .toList();
     }
 
     public EstadisticasApartamentos obtenerEstadisticas() {
         Long totalApartamentos = apartamentoRepository.count();
         Long apartamentosVenta = apartamentoRepository.countByTipo(Apartamento.TipoApartamento.VENTA);
         Long apartamentosArriendo = apartamentoRepository.countByTipo(Apartamento.TipoApartamento.ARRIENDO);
-        Long apartamentosDisponibles = apartamentoRepository.countByDisponible(true);
-        Long apartamentosDestacados = apartamentoRepository.countByDestacado(true);
+        Long apartamentosDisponibles = apartamentoRepository.countByDisponibleTrue();
+        Long apartamentosDestacados = apartamentoRepository.countByDestacadoTrue();
 
         return new EstadisticasApartamentos(
                 totalApartamentos,
@@ -153,7 +175,10 @@ public class ApartamentoService {
         dto.setPiso(apartamento.getPiso());
         dto.setTorre(apartamento.getTorre());
         dto.setApartamento(apartamento.getApartamento());
-        dto.setConjunto(apartamento.getConjunto());
+
+        // Ahora obtenemos el conjunto desde la relación
+        dto.setConjunto(apartamento.getConjunto().getNombre());
+
         dto.setDescripcion(apartamento.getDescripcion());
         dto.setCaracteristicas(parseJsonToList(apartamento.getCaracteristicas()));
         dto.setImagenes(parseJsonToList(apartamento.getImagenes()));
@@ -161,6 +186,25 @@ public class ApartamentoService {
         dto.setDestacado(apartamento.getDestacado());
         dto.setFechaCreacion(apartamento.getFechaCreacion());
         dto.setFechaActualizacion(apartamento.getFechaActualizacion());
+
+        return dto;
+    }
+
+    private ConjuntoDTO convertirConjuntoADTO(Conjunto conjunto) {
+        ConjuntoDTO dto = new ConjuntoDTO();
+        dto.setId(conjunto.getId());
+        dto.setNombre(conjunto.getNombre());
+        dto.setCiudad(conjunto.getCiudad());
+        dto.setSector(conjunto.getSector());
+
+        // Calcular estadísticas del conjunto
+        Long totalApartamentos = (long) conjunto.getApartamentos().size();
+        Long apartamentosDisponibles = conjunto.getApartamentos().stream()
+                .mapToLong(apartamento -> apartamento.getDisponible() ? 1 : 0)
+                .sum();
+
+        dto.setTotalApartamentos(totalApartamentos);
+        dto.setApartamentosDisponibles(apartamentosDisponibles);
 
         return dto;
     }

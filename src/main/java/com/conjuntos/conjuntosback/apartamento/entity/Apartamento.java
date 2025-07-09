@@ -48,8 +48,10 @@ public class Apartamento {
     @Column(nullable = false)
     private String apartamento;
 
-    @Column(nullable = false)
-    private String conjunto;
+    // Relación con la entidad Conjunto
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conjunto_id", nullable = false)
+    private Conjunto conjunto;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;
