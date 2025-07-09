@@ -1,18 +1,18 @@
 spring:
   application:
     name: ConjuntosBack
-  
+
   # Database Configuration
   datasource:
     url: jdbc:mysql://localhost:3306/vecinos_conectados?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: PasswordDB
-  
+
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
