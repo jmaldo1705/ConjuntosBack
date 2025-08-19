@@ -50,6 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/public").permitAll() // Public test endpoint
                         .requestMatchers(HttpMethod.GET, "/api/apartamentos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/conjuntos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/emprendimientos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias-noticias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/noticias/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
