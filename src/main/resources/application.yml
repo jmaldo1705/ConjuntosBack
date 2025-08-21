@@ -17,6 +17,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: America/Bogota
+  jackson:
+    time-zone: America/Bogota
 
 # JWT Configuration
 jwt:

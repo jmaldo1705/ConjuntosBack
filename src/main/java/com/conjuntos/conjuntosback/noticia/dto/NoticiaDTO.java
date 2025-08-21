@@ -1,5 +1,6 @@
 package com.conjuntos.conjuntosback.noticia.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class NoticiaDTO {
     private String imagen;
     private String categoria;
     private String autor;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fechaPublicacion;
     private String prioridad;
     private List<String> etiquetas;
