@@ -1,5 +1,6 @@
 package com.conjuntos.conjuntosback.apartamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -51,6 +52,7 @@ public class Apartamento {
     // Relación con la entidad Conjunto
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conjunto_id", nullable = false)
+    @JsonIgnore
     private Conjunto conjunto;
 
     @Column(columnDefinition = "TEXT")

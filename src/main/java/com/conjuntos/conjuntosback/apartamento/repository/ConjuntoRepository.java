@@ -27,4 +27,13 @@ public interface ConjuntoRepository extends JpaRepository<Conjunto, Integer> {
 
     @Query("SELECT DISTINCT c.sector FROM Conjunto c WHERE c.sector IS NOT NULL ORDER BY c.sector")
     List<String> findDistinctSectores();
+
+    @Query("SELECT DISTINCT c FROM Conjunto c LEFT JOIN FETCH c.apartamentos")
+    List<Conjunto> findAllWithApartamentos();
+
+    @Query("SELECT DISTINCT c FROM Conjunto c LEFT JOIN FETCH c.apartamentos WHERE c.ciudad = ?1 ORDER BY c.nombre")
+    List<Conjunto> findByCiudadWithApartamentos(String ciudad);
+
+    @Query("SELECT DISTINCT c FROM Conjunto c LEFT JOIN FETCH c.apartamentos WHERE c.sector = ?1 ORDER BY c.nombre")
+    List<Conjunto> findBySectorWithApartamentos(String sector);
 }

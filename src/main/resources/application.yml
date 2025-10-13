@@ -10,10 +10,11 @@ spring:
     password: PasswordDB
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: none
     show-sql: true
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true

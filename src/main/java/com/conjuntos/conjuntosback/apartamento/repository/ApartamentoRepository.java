@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ApartamentoRepository extends JpaRepository<Apartamento, Long> {
 
-    @Query("SELECT a FROM Apartamento a WHERE " +
+    @Query("SELECT a FROM Apartamento a JOIN FETCH a.conjunto WHERE " +
             "(:tipo IS NULL OR a.tipo = :tipo) AND " +
             "(:conjuntoNombre IS NULL OR a.conjunto.nombre = :conjuntoNombre) AND " +
             "(:habitaciones IS NULL OR a.habitaciones = :habitaciones) AND " +

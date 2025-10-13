@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class ApartamentoService {
     private final SolicitudVisitaRepository solicitudVisitaRepository;
     private final ObjectMapper objectMapper;
 
+    @Transactional(readOnly = true)
     public RespuestaApartamentos buscarApartamentos(String tipo, String conjunto, Integer habitaciones,
                                                     BigDecimal precioMin, BigDecimal precioMax,
                                                     Boolean disponible, Boolean destacado, String busqueda,
@@ -81,22 +83,26 @@ public class ApartamentoService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Optional<ApartamentoDTO> obtenerApartamentoPorId(Long id) {
         return apartamentoRepository.findById(id)
                 .map(this::convertirADTO);
     }
 
+    @Transactional(readOnly = true)
     public List<String> obtenerConjuntos() {
         return apartamentoRepository.findDistinctConjuntos();
     }
 
+    @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosCompleto() {
-        List<Conjunto> conjuntos = conjuntoRepository.findAll();
+        List<Conjunto> conjuntos = conjuntoRepository.findAllWithApartamentos();
         return conjuntos.stream()
                 .map(this::convertirConjuntoADTO)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public EstadisticasApartamentos obtenerEstadisticas() {
         Long totalApartamentos = apartamentoRepository.count();
         Long apartamentosVenta = apartamentoRepository.countByTipo(Apartamento.TipoApartamento.VENTA);

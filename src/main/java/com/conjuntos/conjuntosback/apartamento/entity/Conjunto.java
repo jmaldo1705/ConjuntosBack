@@ -1,5 +1,6 @@
 package com.conjuntos.conjuntosback.apartamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +29,6 @@ public class Conjunto {
     private String sector;
 
     @OneToMany(mappedBy = "conjunto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Apartamento> apartamentos;
 }

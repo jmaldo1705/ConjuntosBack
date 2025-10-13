@@ -6,6 +6,7 @@ import com.conjuntos.conjuntosback.apartamento.repository.ConjuntoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,36 +18,42 @@ public class ConjuntoService {
 
     private final ConjuntoRepository conjuntoRepository;
 
+    @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerTodosLosConjuntos() {
-        List<Conjunto> conjuntos = conjuntoRepository.findAll();
+        List<Conjunto> conjuntos = conjuntoRepository.findAllWithApartamentos();
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public Optional<ConjuntoDTO> obtenerConjuntoPorId(Integer id) {
         return conjuntoRepository.findById(id)
                 .map(this::convertirADTO);
     }
 
+    @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosPorCiudad(String ciudad) {
-        List<Conjunto> conjuntos = conjuntoRepository.findByCiudad(ciudad);
+        List<Conjunto> conjuntos = conjuntoRepository.findByCiudadWithApartamentos(ciudad);
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosPorSector(String sector) {
-        List<Conjunto> conjuntos = conjuntoRepository.findBySector(sector);
+        List<Conjunto> conjuntos = conjuntoRepository.findBySectorWithApartamentos(sector);
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<String> obtenerCiudades() {
         return conjuntoRepository.findDistinctCiudades();
     }
 
+    @Transactional(readOnly = true)
     public List<String> obtenerSectores() {
         return conjuntoRepository.findDistinctSectores();
     }
