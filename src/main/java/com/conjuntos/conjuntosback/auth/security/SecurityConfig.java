@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/test/public").permitAll() // Public test endpoint
                         .requestMatchers(HttpMethod.GET, "/api/apartamentos/**").permitAll()
@@ -53,6 +54,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/emprendimientos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias-noticias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/noticias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reservas/zonas-comunes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reservas/por-fecha").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reservas/estadisticas").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reservas").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/reservas/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/reservas/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/reservas/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
