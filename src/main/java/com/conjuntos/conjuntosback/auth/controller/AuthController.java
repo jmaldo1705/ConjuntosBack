@@ -47,7 +47,8 @@ public class AuthController {
                 request.password(),
                 request.fullName(),
                 request.apartmentNumber(),
-                request.phoneNumber()
+                request.phoneNumber(),
+                request.conjuntoId()
         );
 
         return ResponseEntity.ok(new RegisterResponse(

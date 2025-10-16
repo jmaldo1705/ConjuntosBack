@@ -61,7 +61,8 @@ public class AuthService {
                 user.getApartmentNumber(),
                 user.getPhoneNumber(),
                 user.getRoles(),
-                user.isActive()
+                user.isActive(),
+                user.getConjuntoId()
         );
 
         return new LoginResponse(token, userInfo);
@@ -76,11 +77,12 @@ public class AuthService {
      * @param fullName the full name
      * @param apartmentNumber the apartment number
      * @param phoneNumber the phone number
+     * @param conjuntoId the residential complex ID
      * @return the created user
      * @throws RuntimeException if the username or email is already in use
      */
     public User registerUser(String username, String email, String password, String fullName, 
-                             String apartmentNumber, String phoneNumber) {
+                             String apartmentNumber, String phoneNumber, String conjuntoId) {
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Error: Username is already taken!");
         }
@@ -94,6 +96,7 @@ public class AuthService {
         user.setFullName(fullName);
         user.setApartmentNumber(apartmentNumber);
         user.setPhoneNumber(phoneNumber);
+        user.setConjuntoId(conjuntoId);
 
         Set<String> roles = new HashSet<>();
         roles.add("USER");

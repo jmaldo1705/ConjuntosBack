@@ -42,6 +42,9 @@ public class User {
     private String apartmentNumber;
     private String phoneNumber;
     private boolean isActive = true;
+    
+    @Column(name = "conjunto_id", length = 50)
+    private String conjuntoId;  // ID del conjunto residencial al que pertenece el usuario
 
     // Constructors
     public User() {
@@ -124,5 +127,13 @@ public class User {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public String getConjuntoId() {
+        return conjuntoId;
+    }
+
+    public void setConjuntoId(String conjuntoId) {
+        this.conjuntoId = conjuntoId;
     }
 }

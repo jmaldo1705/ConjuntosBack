@@ -10,5 +10,6 @@ public record UserInfo(
         String apartmentNumber,
         String phoneNumber,
         Set<String> roles,
-        boolean isActive
+        boolean isActive,
+        String conjuntoId
 ) {}

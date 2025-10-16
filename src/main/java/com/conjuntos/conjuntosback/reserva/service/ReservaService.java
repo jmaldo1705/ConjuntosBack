@@ -38,7 +38,18 @@ public class ReservaService {
 
     @Transactional(readOnly = true)
     public List<ZonaComunDTO> obtenerZonasComunes() {
-        List<ZonaComun> zonas = zonaComunRepository.findAllDisponiblesWithHorarios();
+        User usuario = obtenerUsuarioActual();
+        String conjuntoId = usuario.getConjuntoId();
+        
+        List<ZonaComun> zonas;
+        if (conjuntoId != null && !conjuntoId.isEmpty()) {
+            // Filtrar por conjunto del usuario
+            zonas = zonaComunRepository.findAllDisponiblesWithHorariosByConjuntoId(conjuntoId);
+        } else {
+            // Si no tiene conjunto asignado, mostrar todas (compatibilidad con datos existentes)
+            zonas = zonaComunRepository.findAllDisponiblesWithHorarios();
+        }
+        
         return zonas.stream()
                 .map(this::convertirZonaComunADTO)
                 .collect(Collectors.toList());
@@ -229,6 +240,7 @@ public class ReservaService {
         dto.setTarifa(zona.getTarifa());
         dto.setDisponible(zona.getDisponible());
         dto.setRequiereReserva(zona.getRequiereReserva());
+        dto.setConjuntoId(zona.getConjuntoId());
 
         if (zona.getHorarios() != null) {
             List<HorarioDTO> horarios = zona.getHorarios().stream()

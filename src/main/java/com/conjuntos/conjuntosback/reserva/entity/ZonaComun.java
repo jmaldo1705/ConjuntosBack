@@ -45,6 +45,9 @@ public class ZonaComun {
     @Column(name = "requiere_reserva")
     private Boolean requiereReserva = true;
 
+    @Column(name = "conjunto_id", length = 50)
+    private String conjuntoId;  // ID del conjunto residencial al que pertenece la zona común
+
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 

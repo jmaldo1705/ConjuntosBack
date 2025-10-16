@@ -20,5 +20,6 @@ public class ZonaComunDTO {
     private BigDecimal tarifa;
     private Boolean disponible;
     private Boolean requiereReserva;
+    private String conjuntoId;
     private List<HorarioDTO> horarios;
 }

@@ -14,6 +14,7 @@ public record UserInfoResponse(
     String apartmentNumber,
     String phoneNumber,
     Set<String> roles,
-    boolean isActive
+    boolean isActive,
+    String conjuntoId
 ) {
 }

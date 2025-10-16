@@ -39,7 +39,8 @@ public class UserController {
                 user.getApartmentNumber(),
                 user.getPhoneNumber(),
                 user.getRoles(),
-                user.isActive()
+                user.isActive(),
+                user.getConjuntoId()
         ));
     }
 }

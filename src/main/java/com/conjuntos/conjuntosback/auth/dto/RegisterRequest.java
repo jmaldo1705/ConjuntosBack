@@ -10,5 +10,6 @@ public record RegisterRequest(
     @NotBlank @Size(min = 6, max = 40) String password,
     String fullName,
     String apartmentNumber,
-    String phoneNumber
+    String phoneNumber,
+    String conjuntoId
 ) {}
