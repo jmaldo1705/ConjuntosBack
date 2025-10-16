@@ -14,9 +14,10 @@ import java.util.List;
 @Repository
 public interface ApartamentoRepository extends JpaRepository<Apartamento, Long> {
 
-    @Query("SELECT a FROM Apartamento a JOIN FETCH a.conjunto WHERE " +
+    @Query("SELECT a FROM Apartamento a JOIN FETCH a.conjuntoResidencial WHERE " +
             "(:tipo IS NULL OR a.tipo = :tipo) AND " +
-            "(:conjuntoNombre IS NULL OR a.conjunto.nombre = :conjuntoNombre) AND " +
+            "(:conjuntoNombre IS NULL OR a.conjuntoResidencial.nombre = :conjuntoNombre) AND " +
+            "(:ciudad IS NULL OR a.conjuntoResidencial.ciudad = :ciudad) AND " +
             "(:habitaciones IS NULL OR a.habitaciones = :habitaciones) AND " +
             "(:precioMin IS NULL OR a.precio >= :precioMin) AND " +
             "(:precioMax IS NULL OR a.precio <= :precioMax) AND " +
@@ -24,9 +25,10 @@ public interface ApartamentoRepository extends JpaRepository<Apartamento, Long> 
             "(:destacado IS NULL OR a.destacado = :destacado) AND " +
             "(:busqueda IS NULL OR LOWER(a.titulo) LIKE LOWER(CONCAT('%', :busqueda, '%')) OR " +
             "LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :busqueda, '%')) OR " +
-            "LOWER(a.conjunto.nombre) LIKE LOWER(CONCAT('%', :busqueda, '%')))")
+            "LOWER(a.conjuntoResidencial.nombre) LIKE LOWER(CONCAT('%', :busqueda, '%')))")
     Page<Apartamento> findByFiltros(@Param("tipo") String tipo,
                                     @Param("conjuntoNombre") String conjuntoNombre,
+                                    @Param("ciudad") String ciudad,
                                     @Param("habitaciones") Integer habitaciones,
                                     @Param("precioMin") BigDecimal precioMin,
                                     @Param("precioMax") BigDecimal precioMax,
@@ -35,8 +37,11 @@ public interface ApartamentoRepository extends JpaRepository<Apartamento, Long> 
                                     @Param("busqueda") String busqueda,
                                     Pageable pageable);
 
-    @Query("SELECT DISTINCT c.nombre FROM Apartamento a JOIN a.conjunto c ORDER BY c.nombre")
+    @Query("SELECT DISTINCT c.nombre FROM Apartamento a JOIN a.conjuntoResidencial c ORDER BY c.nombre")
     List<String> findDistinctConjuntos();
+    
+    @Query("SELECT DISTINCT c.ciudad FROM Apartamento a JOIN a.conjuntoResidencial c WHERE c.ciudad IS NOT NULL ORDER BY c.ciudad")
+    List<String> findDistinctCiudades();
 
     Long countByTipo(Apartamento.TipoApartamento tipo);
 

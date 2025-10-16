@@ -1,5 +1,6 @@
 package com.conjuntos.conjuntosback.apartamento.entity;
 
+import com.conjuntos.conjuntosback.admin.entity.ConjuntoResidencial;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,11 +50,11 @@ public class Apartamento {
     @Column(nullable = false)
     private String apartamento;
 
-    // Relación con la entidad Conjunto
+    // Relación con la entidad ConjuntoResidencial
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "conjunto_id", nullable = false)
+    @JoinColumn(name = "conjunto_residencial_id", referencedColumnName = "conjunto_id")
     @JsonIgnore
-    private Conjunto conjunto;
+    private ConjuntoResidencial conjuntoResidencial;
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;

@@ -20,7 +20,8 @@ public class ConjuntoService {
 
     @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerTodosLosConjuntos() {
-        List<Conjunto> conjuntos = conjuntoRepository.findAllWithApartamentos();
+        // NOTA: Usar ConjuntoResidencial para datos completos con apartamentos
+        List<Conjunto> conjuntos = conjuntoRepository.findAll();
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
@@ -34,7 +35,8 @@ public class ConjuntoService {
 
     @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosPorCiudad(String ciudad) {
-        List<Conjunto> conjuntos = conjuntoRepository.findByCiudadWithApartamentos(ciudad);
+        // NOTA: Usar ConjuntoResidencial para datos completos con apartamentos
+        List<Conjunto> conjuntos = conjuntoRepository.findByCiudad(ciudad);
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
@@ -42,7 +44,8 @@ public class ConjuntoService {
 
     @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosPorSector(String sector) {
-        List<Conjunto> conjuntos = conjuntoRepository.findBySectorWithApartamentos(sector);
+        // NOTA: Usar ConjuntoResidencial para datos completos con apartamentos
+        List<Conjunto> conjuntos = conjuntoRepository.findBySector(sector);
         return conjuntos.stream()
                 .map(this::convertirADTO)
                 .toList();
@@ -65,19 +68,10 @@ public class ConjuntoService {
         dto.setCiudad(conjunto.getCiudad());
         dto.setSector(conjunto.getSector());
 
-        // Calcular estadísticas del conjunto
-        if (conjunto.getApartamentos() != null) {
-            Long totalApartamentos = (long) conjunto.getApartamentos().size();
-            Long apartamentosDisponibles = conjunto.getApartamentos().stream()
-                    .mapToLong(apartamento -> apartamento.getDisponible() ? 1 : 0)
-                    .sum();
-
-            dto.setTotalApartamentos(totalApartamentos);
-            dto.setApartamentosDisponibles(apartamentosDisponibles);
-        } else {
-            dto.setTotalApartamentos(0L);
-            dto.setApartamentosDisponibles(0L);
-        }
+        // NOTA: La relación con apartamentos fue movida a ConjuntoResidencial
+        // No podemos calcular estadísticas desde la entidad Conjunto antigua
+        dto.setTotalApartamentos(0L);
+        dto.setApartamentosDisponibles(0L);
 
         return dto;
     }

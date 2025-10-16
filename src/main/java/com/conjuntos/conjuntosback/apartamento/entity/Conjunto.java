@@ -1,13 +1,14 @@
 package com.conjuntos.conjuntosback.apartamento.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+/**
+ * DEPRECADO: Esta entidad será reemplazada por ConjuntoResidencial
+ * Mantener solo para compatibilidad durante la migración
+ */
 @Entity
 @Table(name = "conjuntos")
 @Data
@@ -28,7 +29,8 @@ public class Conjunto {
     @Column(length = 100)
     private String sector;
 
-    @OneToMany(mappedBy = "conjunto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Apartamento> apartamentos;
+    // DESHABILITADO: La relación con Apartamento ahora usa ConjuntoResidencial
+    // @OneToMany(mappedBy = "conjunto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // @JsonIgnore
+    // private List<Apartamento> apartamentos;
 }

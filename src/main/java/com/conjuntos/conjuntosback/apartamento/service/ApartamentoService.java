@@ -1,13 +1,13 @@
 
 package com.conjuntos.conjuntosback.apartamento.service;
 
+import com.conjuntos.conjuntosback.admin.entity.ConjuntoResidencial;
+import com.conjuntos.conjuntosback.admin.repository.ConjuntoResidencialRepository;
 import com.conjuntos.conjuntosback.apartamento.dto.*;
 import com.conjuntos.conjuntosback.apartamento.entity.Apartamento;
-import com.conjuntos.conjuntosback.apartamento.entity.Conjunto;
 import com.conjuntos.conjuntosback.apartamento.entity.SolicitudInformacion;
 import com.conjuntos.conjuntosback.apartamento.entity.SolicitudVisita;
 import com.conjuntos.conjuntosback.apartamento.repository.ApartamentoRepository;
-import com.conjuntos.conjuntosback.apartamento.repository.ConjuntoRepository;
 import com.conjuntos.conjuntosback.apartamento.repository.SolicitudInformacionRepository;
 import com.conjuntos.conjuntosback.apartamento.repository.SolicitudVisitaRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,13 +32,13 @@ import java.util.Optional;
 public class ApartamentoService {
 
     private final ApartamentoRepository apartamentoRepository;
-    private final ConjuntoRepository conjuntoRepository;
+    private final ConjuntoResidencialRepository conjuntoResidencialRepository;
     private final SolicitudInformacionRepository solicitudInformacionRepository;
     private final SolicitudVisitaRepository solicitudVisitaRepository;
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public RespuestaApartamentos buscarApartamentos(String tipo, String conjunto, Integer habitaciones,
+    public RespuestaApartamentos buscarApartamentos(String tipo, String conjunto, String ciudad, Integer habitaciones,
                                                     BigDecimal precioMin, BigDecimal precioMax,
                                                     Boolean disponible, Boolean destacado, String busqueda,
                                                     int pagina, int limite) {
@@ -55,10 +55,11 @@ public class ApartamentoService {
 
         Pageable pageable = PageRequest.of(pagina, limite);
 
-        // Usar el nuevo method que filtra por nombre del conjunto
+        // Usar el nuevo método que filtra por nombre del conjunto y ciudad
         Page<Apartamento> apartamentosPage = apartamentoRepository.findByFiltros(
                 tipoEnum != null ? tipoEnum.name() : null,
                 conjunto,
+                ciudad,
                 habitaciones,
                 precioMin,
                 precioMax,
@@ -93,10 +94,15 @@ public class ApartamentoService {
     public List<String> obtenerConjuntos() {
         return apartamentoRepository.findDistinctConjuntos();
     }
+    
+    @Transactional(readOnly = true)
+    public List<String> obtenerCiudades() {
+        return apartamentoRepository.findDistinctCiudades();
+    }
 
     @Transactional(readOnly = true)
     public List<ConjuntoDTO> obtenerConjuntosCompleto() {
-        List<Conjunto> conjuntos = conjuntoRepository.findAllWithApartamentos();
+        List<ConjuntoResidencial> conjuntos = conjuntoResidencialRepository.findAll();
         return conjuntos.stream()
                 .map(this::convertirConjuntoADTO)
                 .toList();
@@ -182,8 +188,14 @@ public class ApartamentoService {
         dto.setTorre(apartamento.getTorre());
         dto.setApartamento(apartamento.getApartamento());
 
-        // Ahora obtenemos el conjunto desde la relación
-        dto.setConjunto(apartamento.getConjunto().getNombre());
+        // Ahora obtenemos el conjunto desde la relación con ConjuntoResidencial
+        if (apartamento.getConjuntoResidencial() != null) {
+            dto.setConjunto(apartamento.getConjuntoResidencial().getNombre());
+            dto.setCiudad(apartamento.getConjuntoResidencial().getCiudad());
+        } else {
+            dto.setConjunto("No asignado");
+            dto.setCiudad("No disponible");
+        }
 
         dto.setDescripcion(apartamento.getDescripcion());
         dto.setCaracteristicas(parseJsonToList(apartamento.getCaracteristicas()));
@@ -196,21 +208,16 @@ public class ApartamentoService {
         return dto;
     }
 
-    private ConjuntoDTO convertirConjuntoADTO(Conjunto conjunto) {
+    private ConjuntoDTO convertirConjuntoADTO(ConjuntoResidencial conjunto) {
         ConjuntoDTO dto = new ConjuntoDTO();
-        dto.setId(conjunto.getId());
+        dto.setId(null); // ConjuntoResidencial usa String como ID, pero mantenemos compatibilidad
         dto.setNombre(conjunto.getNombre());
         dto.setCiudad(conjunto.getCiudad());
-        dto.setSector(conjunto.getSector());
+        dto.setSector(null); // ConjuntoResidencial no tiene sector
 
-        // Calcular estadísticas del conjunto
-        Long totalApartamentos = (long) conjunto.getApartamentos().size();
-        Long apartamentosDisponibles = conjunto.getApartamentos().stream()
-                .mapToLong(apartamento -> apartamento.getDisponible() ? 1 : 0)
-                .sum();
-
-        dto.setTotalApartamentos(totalApartamentos);
-        dto.setApartamentosDisponibles(apartamentosDisponibles);
+        // Obtener estadísticas de apartamentos relacionados
+        dto.setTotalApartamentos(conjunto.getNumeroApartamentos() != null ? conjunto.getNumeroApartamentos().longValue() : 0L);
+        dto.setApartamentosDisponibles(0L); // Se puede calcular si es necesario
 
         return dto;
     }

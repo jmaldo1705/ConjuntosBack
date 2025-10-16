@@ -22,6 +22,7 @@ public class ApartamentoController {
     public ResponseEntity<RespuestaApartamentos> obtenerApartamentos(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String conjunto,
+            @RequestParam(required = false) String ciudad,
             @RequestParam(required = false) Integer habitaciones,
             @RequestParam(required = false) BigDecimal precioMin,
             @RequestParam(required = false) BigDecimal precioMax,
@@ -32,7 +33,7 @@ public class ApartamentoController {
             @RequestParam(defaultValue = "10") int limite) {
 
         RespuestaApartamentos respuesta = apartamentoService.buscarApartamentos(
-                tipo, conjunto, habitaciones, precioMin, precioMax,
+                tipo, conjunto, ciudad, habitaciones, precioMin, precioMax,
                 disponible, destacado, busqueda, pagina, limite
         );
 
@@ -50,6 +51,12 @@ public class ApartamentoController {
     public ResponseEntity<List<String>> obtenerConjuntos() {
         List<String> conjuntos = apartamentoService.obtenerConjuntos();
         return ResponseEntity.ok(conjuntos);
+    }
+    
+    @GetMapping("/ciudades")
+    public ResponseEntity<List<String>> obtenerCiudades() {
+        List<String> ciudades = apartamentoService.obtenerCiudades();
+        return ResponseEntity.ok(ciudades);
     }
 
     // Nuevo endpoint para obtener información completa de conjuntos

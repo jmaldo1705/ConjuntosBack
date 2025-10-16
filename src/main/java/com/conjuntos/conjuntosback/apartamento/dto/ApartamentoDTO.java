@@ -23,6 +23,7 @@ public class ApartamentoDTO {
     private String torre;
     private String apartamento;
     private String conjunto;
+    private String ciudad;
     private String descripcion;
     private List<String> caracteristicas;
     private List<String> imagenes;
